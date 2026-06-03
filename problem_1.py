@@ -3,26 +3,34 @@ f_name = "1_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
-def processLine(line, currentNum):
-    
-    if "L" in line:
-        numberStart = line.index("L")
-    elif "R" in line:
-        numberStart = line.index("R")
-    
-    number = int(line[numberStart+1:-1])
-    
-    if "L" in line:
-        answer = (currentNum - number) % 100
-    else:
-        answer = (currentNum + number) % 100
-    
-    return answer
+position = 50
+count = 0
 
-number = 50
-seenValues = []
+
+def processLine(line, position, count):
+    # print("line:", line)
+    # print("position:", position)
+    # print("count:", count)
+    movement = int(line[1:-1])
+
+    i = movement
+    for _ in range(0, movement):
+        if "L" in line:
+            position -= 1
+        else:
+            position += 1
+
+        if position % 100 == 0:
+            count += 1
+
+    # print("position:", position)
+    # print("count:", count)
+    # input("enter to con")
+    return position, count
+
+
 for line in lines:
-    number = processLine(line, number)
-    seenValues.append(number)
+    position, count = processLine(line, position, count)
+    # input("enter to con")
 
-print("seenValues.count(0):", seenValues.count(0))
+print("count:", count)
