@@ -8,9 +8,6 @@ count = 0
 
 
 def processLine(line, position, count):
-    # print("line:", line)
-    # print("position:", position)
-    # print("count:", count)
     movement = int(line[1:-1])
 
     i = movement
@@ -22,15 +19,10 @@ def processLine(line, position, count):
 
         if position % 100 == 0:
             count += 1
-
-    # print("position:", position)
-    # print("count:", count)
-    # input("enter to con")
     return position, count
 
 
 for line in lines:
     position, count = processLine(line, position, count)
-    # input("enter to con")
 
 print("count:", count)
