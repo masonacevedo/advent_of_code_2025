@@ -63,11 +63,13 @@ def count():
                     grid[row+1][col+1] = currentNum
                 else:
                     grid[row+1][col+1] = grid[row+1][col+1] + currentNum
+            elif grid[row+1][col] in nums:
+                grid[row+1][col] = grid[row][col] + grid[row+1][col]
             else:
                 grid[row+1][col] = grid[row][col]
             
-            printGrid(grid)
-            input("enter to con")
+            # printGrid(grid)
+            # input("enter to con")
 
 # import copy
 # print("\n")
@@ -84,7 +86,7 @@ printGrid(grid)
 # ans = countPaths(grid, 0, grid[0].index("|"))
 # print("ans:", ans)
 
-lastRow = grid[-1]
+lastRow = grid[-2]
 print("lastRow:", lastRow)
 lastNums = list(filter(lambda e: type(e) == int, lastRow))
 print("lastNums:", lastNums)
