@@ -3,7 +3,8 @@ f_name = "4_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
-grid = [line.replace("\n","") for line in lines]
+rawGrid = [line.replace("\n","") for line in lines]
+grid = [list(char for char in line) for line in rawGrid]
 
 def getNeighbors(row, col):
     
@@ -46,30 +47,40 @@ def isRoll(coords):
     return grid[coords[0]][coords[1]] == "@"
 
 
-accessible = 0
-for row in range(0, len(grid)):
-    for col in range(0, len(grid[0])):
-        
-        if grid[row][col] != "@":
-            continue
-        # print("len(grid):", len(grid))
-        # print("len(grid[0]):", len(grid[0]))
+def getRemovable():
+    removable = []
+    for row in range(0, len(grid)):
+        for col in range(0, len(grid[0])):
+            
+            if grid[row][col] != "@":
+                continue
+            # print("len(grid):", len(grid))
+            # print("len(grid[0]):", len(grid[0]))
 
-        # print("row:", row)
-        # print("col:", col)
-        neighbors = getNeighbors(row, col)
-        # print("neighbors:", neighbors)
-        # input("enter to con")
-        # print("neighbors:", neighbors)
-        rolls = [isRoll(n) for n in neighbors]
-        rollCount = sum(rolls)
-        if rollCount < 4:
-            # print("accessilbe!")
-            accessible += 1
-        # else:
-            # print("not accessible")
-        
-        # input("enter to con")
+            # print("row:", row)
+            # print("col:", col)
+            neighbors = getNeighbors(row, col)
+            # print("neighbors:", neighbors)
+            # input("enter to con")
+            # print("neighbors:", neighbors)
+            rolls = [isRoll(n) for n in neighbors]
+            rollCount = sum(rolls)
+            if rollCount < 4:
+                # print("accessilbe!")
+                removable.append((row, col))
+            # else:
+                # print("not accessible")
+            
+            # input("enter to con")
+    return removable
 
-print("accessible:", accessible)
+ans = 0
+while len(getRemovable()) > 0:
+    coords = getRemovable()
+    ans += len(coords)
+    for coord in coords:
+        row, col = coord
+        grid[row][col] = "."
+    
 
+print("ans:", ans)
