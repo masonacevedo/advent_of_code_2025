@@ -1,6 +1,6 @@
 import math
 
-f_name = "7_example.txt"
+f_name = "7_input.txt"
 
 with open(f_name, "r+") as f:
     lines = f.readlines()
@@ -9,7 +9,7 @@ grid = [line.replace("\n","") for line in lines]
 grid = [[char for char in line] for line in grid]
 
 def printGrid(grid):
-    for row in grid:
+    for row in grid[0:len(grid)]:
         print("".join([str(e) for e in row]))
 
 printGrid(grid)
@@ -35,8 +35,6 @@ splitCount = propogate(grid, 0)
 print("\n")
 printGrid(grid)
 
-nums = [1,2,3,4,5,6,7,8,9]
-
 firstRow = 0
 firstCol = grid[0].index("|")
 grid[firstRow][firstCol] = 1
@@ -46,7 +44,7 @@ printGrid(grid)
 def count():
     for row in range(0, len(grid)):
         for col in range(0, len(grid[0])):
-            if grid[row][col] not in nums:
+            if type(grid[row][col]) != int:
                 continue
             if row == len(grid)-1:
                 continue
@@ -63,11 +61,13 @@ def count():
                     grid[row+1][col+1] = currentNum
                 else:
                     grid[row+1][col+1] = grid[row+1][col+1] + currentNum
-            elif grid[row+1][col] in nums:
+            elif type(grid[row+1][col]) == int:
                 grid[row+1][col] = grid[row][col] + grid[row+1][col]
             else:
                 grid[row+1][col] = grid[row][col]
             
+            # for r in grid:
+            #     print(r)
             # printGrid(grid)
             # input("enter to con")
 
@@ -86,7 +86,7 @@ printGrid(grid)
 # ans = countPaths(grid, 0, grid[0].index("|"))
 # print("ans:", ans)
 
-lastRow = grid[-2]
+lastRow = grid[-1]
 print("lastRow:", lastRow)
 lastNums = list(filter(lambda e: type(e) == int, lastRow))
 print("lastNums:", lastNums)
