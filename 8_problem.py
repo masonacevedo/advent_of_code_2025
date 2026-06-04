@@ -56,16 +56,19 @@ def connect(triplet):
 
     # input("enter to con")
 
-NUM_CONNECTIONS = 1000
-for i in range(0, NUM_CONNECTIONS):
+i = 0
+while len(uf.component_sizes()) > 1:
     connect(sortedTriplets[i])
+    i += 1
 
-print(uf.component_sizes())
+print(sortedTriplets[i-1])
+coord1, coord2, _ = sortedTriplets[i-1]
+x1, _, _ = coord1
+x2, _, _ = coord2
+print(x1*x2)
 
-componentSizes = sorted(uf.component_sizes().values())
-
-ans = componentSizes[-1] * componentSizes[-2] * componentSizes[-3]
-print("ans:", ans)
+# ans = componentSizes[-1] * componentSizes[-2] * componentSizes[-3]
+# print("ans:", ans)
 
 # def connectClosest(coords):
 #     bestSoFar = float('inf')
