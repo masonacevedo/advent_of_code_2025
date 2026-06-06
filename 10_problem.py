@@ -84,25 +84,9 @@ def getBestButton(startConfig, targetConfig, buttonArray):
 
 
 def minPresses(startConfig, targetConfig, buttonArray, level):
-    
-    # if level % 10 == 0:
-    #     print("startCconfig:", startConfig)
-    #     print("targetConfig:", targetConfig)
-    #     print("larger:", larger)
-    #     print("level:       ", level)
-    #     input("enter to con")
-    # print("startConfig: ", startConfig)
-    # print("targetConfig:", targetConfig)
-    # print("buttonArray:", buttonArray)
-
     if len(buttonArray) == 1:
-        # print("only one button...")
-        
         hitsNeeded = [slotEnd - slotStart for slotEnd, slotStart in zip(targetConfig, startConfig)]
         k = max(hitsNeeded)
-        # print("k:", k)
-        # input("enter to con")
-        # print()
         if k < 0:
             return float('inf')
         if simulatePresses(startConfig, buttonArray[0], k) != targetConfig:
@@ -110,7 +94,6 @@ def minPresses(startConfig, targetConfig, buttonArray, level):
         return k
     bestButton, fullyDetermined, slot, upperBoundPresses = getBestButton(startConfig, targetConfig, buttonArray)
     if fullyDetermined:
-        # print("fully determined!!!!")
         pressesRequired = targetConfig[slot] - startConfig[slot]
         if pressesRequired < 0:
             return float('inf')
@@ -118,38 +101,14 @@ def minPresses(startConfig, targetConfig, buttonArray, level):
         newConfig = simulatePresses(startConfig, bestButton, pressesRequired)
         larger = [s > t for s,t in zip(newConfig, targetConfig)]
         if any(larger):
-            # print("larger:", larger)
-            # print('newConfig   :', newConfig)
-            # print("targetConfig:", targetConfig)
-            # input("enter to con")
             return float('inf')
-        # print("bestButton:", bestButton)
-        # print("pressesRequired:", pressesRequired)
-        # print("newConfig:", newConfig)
-        # print("otherButtons:", otherButtons)
-        # input("enter to con")
-        # print()
         return pressesRequired + minPresses(newConfig, targetConfig, otherButtons, level+1)
-
-    # print("not fully determined :(")
-    # print("bestButton:", bestButton)
-    # print("fullyDetermined:", fullyDetermined)
-    # print("slot:", slot)
-    # print("upperBoundPresses:", upperBoundPresses)
 
     options = []
     for numPresses in range(upperBoundPresses, -1, -1):
         start = simulatePresses(startConfig, bestButton, numPresses)
         otherButtons = [b for b in buttonArray if b != bestButton]
-        # print("numPresses:", numPresses)
-        # print("start:", start)
-        # print("otherButtons:", otherButtons)
-        # input("enter to con")
-        # print()
-        
         ans = numPresses + minPresses(start, targetConfig, otherButtons, level+1)
-        # if level == 0:
-        # print("ans:", ans)
         options.append(ans)
     return min(options)
 
@@ -177,7 +136,8 @@ for i, line in enumerate(clean_lines):
     print("buttonArray:", buttonArray)
     print()
     ans = minPressesWrapper(joltages, buttonArray)
-    # print("ans:", ans)
+    print("ans:", ans)
+    print("\n")
     presses.append(ans)
 
 print("presses:", presses)
