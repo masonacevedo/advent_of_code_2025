@@ -1,5 +1,6 @@
 import copy
 from collections import deque
+import time
 
 # DATA PROCESSING
 
@@ -37,55 +38,146 @@ def stringToButton(s):
 
 # LOGIC
 
-def simulatePress(numArray, button):
+def simulatePresses(numArray, button, k):
     ans = copy.copy(numArray)
-    for i in button:
-        ans[i] += 1
+    for slot in button:
+        ans[slot] += k
     return ans
 
-def getNeighbors(numArray, buttonArray):
-    return [simulatePress(numArray, button) for button in buttonArray]
 
-def minPresses(startingConfig, targetConfig, buttonArray):
-    queue = deque([(startingConfig, 0)])
-    seenBefore = set()
+def getFullyDetermined(start, target, button, otherButtons):
+    # returns true if the given button is fully determined,
+    # i.e. is the only button that hits a certain slot.
+    slots_hit = button
 
-    while len(queue) > 0:
-        currentConfig, level = queue.popleft()
-        # print("currentConfig:", currentConfig)
-        # print("level:", level)
-        # input("enter to con")
-        if tuple(currentConfig) in seenBefore:
-            continue
+    for slot in slots_hit:
+        otherButtonsHit = [not(slot in b) for b in otherButtons]
+        if all(otherButtonsHit):
+            return True, slot
+    return False, None
+
+def mostDetermined(start, target, buttonArray):
+    # given the array of buttons, and knowing that none of them
+    # are fully determined, we return the button s.t.
+    # it has the smallest possible range. 
+    
+    hitsNeeded = [slotEnd - slotStart for slotEnd, slotStart in zip(target, start)]
+    upperBounds = []
+    for b in buttonArray:
         
-        if currentConfig == targetConfig:
-            return level
+        maxHits = [hitsNeeded[slot] for slot in b]
+        upperBounds.append(min(maxHits))
+    
+    bestIndex = upperBounds.index(min(upperBounds))
+    return buttonArray[bestIndex], upperBounds[bestIndex]
 
-        neighbors = getNeighbors(currentConfig, buttonArray)
 
-        for n in neighbors:
-            queue.append((n, level+1))
+def getBestButton(startConfig, targetConfig, buttonArray):
+    for button in buttonArray:
+        otherButtons = [b for b in buttonArray if b != button]
+        fullyDetermined, slot = getFullyDetermined(startConfig, targetConfig, button, otherButtons)
+        if fullyDetermined:
+            return button, True, slot, None
+    bestButton, numPresses = mostDetermined(startConfig, targetConfig, buttonArray)
+    return bestButton, False, None, numPresses
+        
 
-        seenBefore.add(tuple(currentConfig))
 
+def minPresses(startConfig, targetConfig, buttonArray, level):
+    larger = [s > t for s,t in zip(startConfig, targetConfig)]
+    
+    if any(larger):
+        # print("larger:", larger)
+        # print('startCconfig:', startConfig)
+        # print("targetConfig:", targetConfig)
+        # input("enter to con")
+        return float('inf')
+    # if level % 10 == 0:
+    #     print("startCconfig:", startConfig)
+    #     print("targetConfig:", targetConfig)
+    #     print("larger:", larger)
+    #     print("level:       ", level)
+    #     input("enter to con")
+    # print("startConfig:", startConfig)
+    # print("targetConfig:", targetConfig)
+    # print("buttonArray:", buttonArray)
+
+    if len(buttonArray) == 1:
+        # print("only one button...")
+        # input("enter to con")
+        hitsNeeded = [slotEnd - slotStart for slotEnd, slotStart in zip(targetConfig, startConfig)]
+        k = max(hitsNeeded)
+        if k < 0:
+            return float('inf')
+        if simulatePresses(startConfig, buttonArray[0], k) != targetConfig:
+            return float('inf')
+        return k
+    bestButton, fullyDetermined, slot, upperBoundPresses = getBestButton(startConfig, targetConfig, buttonArray)
+    if fullyDetermined:
+        # print("fully determined!!!!")
+        pressesRequired = targetConfig[slot] - startConfig[slot]
+        if pressesRequired < 0:
+            return float('inf')
+        otherButtons = [b for b in buttonArray if b != bestButton]
+        newConfig = simulatePresses(startConfig, bestButton, pressesRequired)
+        # print("bestButton:", bestButton)
+        # print("pressesRequired:", pressesRequired)
+        # print("newConfig:", newConfig)
+        # print("otherButtons:", otherButtons)
+        # input("enter to con")
+        # print()
+        return pressesRequired + minPresses(newConfig, targetConfig, otherButtons, level+1)
+
+    # print("not fully determined :(")
+    # print("bestButton:", bestButton)
+    # print("fullyDetermined:", fullyDetermined)
+    # print("slot:", slot)
+    # print("upperBoundPresses:", upperBoundPresses)
+
+    options = []
+    for numPresses in range(upperBoundPresses, -1, -1):
+        start = simulatePresses(startConfig, bestButton, numPresses)
+        otherButtons = [b for b in buttonArray if b != bestButton]
+        # if level == 0:
+        # print("numPresses:", numPresses)
+        # print("start:", start)
+        # print("otherButtons:", otherButtons)
+        # input("enter to con")
+        # print()
+        
+        ans = numPresses + minPresses(start, targetConfig, otherButtons, level+1)
+        # if level == 0:
+        # print("ans:", ans)
+        options.append(ans)
+    # if level == 0:
+    #     print("options:", options)
+    return min(options)
 
 
 def minPressesWrapper(targetConfig, buttonArray):
-    return minPresses([0]*len(targetConfig), targetConfig, buttonArray)
+    return minPresses([0]*len(targetConfig), targetConfig, buttonArray, level=0)
 
     
 
 # FINAL LOOP
 
 presses = []
-for line in clean_lines:
+for i, line in enumerate(clean_lines):
+    lastPrint = time.time()
+    if time.time() - lastPrint > 1:
+        lastPrint = time.time()
+        print(i,"/", len(clean_lines))
+
     configString, *buttons, joltageString = line.split(" ")
     targetConfig = stringToBoolArray(configString)
 
     joltages = stringToNumArray(joltageString)
     buttonArray = [stringToButton(button) for button in buttons]
-    
+    print("joltages:", joltages)
+    print("buttonArray:", buttonArray)
+    print()
     ans = minPressesWrapper(joltages, buttonArray)
+    print("ans:", ans)
     presses.append(ans)
 
 print("presses:", presses)
