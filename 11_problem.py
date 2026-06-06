@@ -20,23 +20,22 @@ for k,v in adjList.items():
 print()
 
 def findPaths(source, dest, adjList, currentPath = set()):
-    if dest in adjList[source]:
-        return [[source, dest]]
+    if source == dest:
+        return 1
     
     if source in currentPath:
-        return None
+        return 0
     
     currentPath.add(source)
-    allPaths = []
+    count = 0
     for neighbor in adjList[source]:
         pathsFromNeighbor = findPaths(neighbor, dest, adjList, currentPath)
+        count += pathsFromNeighbor
         if pathsFromNeighbor is None:
             continue
-        newPaths = [[source] + copy.copy(p) for p in pathsFromNeighbor]
-        allPaths += newPaths
+
     currentPath.remove(source)
-    return allPaths
+    return count
     
 ans = findPaths("you", "out", adjList)
 print("ans:", ans)
-print("len(ans):", len(ans))
