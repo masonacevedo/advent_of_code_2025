@@ -3,7 +3,7 @@ from collections import deque
 
 # DATA PROCESSING
 
-f_name = "10_input.txt"
+f_name = "10_example.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -22,6 +22,13 @@ def stringToBoolArray(s):
             raise Exception("invalid input!")
     return ans
 
+def stringToNumArray(s):
+    a = s.replace("{","")
+    a = a.replace("}","")
+    numsAsStrs = a.split(",")
+    return [int(s) for s in numsAsStrs]
+
+
 def stringToButton(s):
     a = s.replace("(","")
     a = a.replace(")","")
@@ -30,14 +37,14 @@ def stringToButton(s):
 
 # LOGIC
 
-def simulatePress(boolArray, button):
-    ans = copy.copy(boolArray)
+def simulatePress(numArray, button):
+    ans = copy.copy(numArray)
     for i in button:
-        ans[i] = not(ans[i])
+        ans[i] += 1
     return ans
 
-def getNeighbors(boolArray, buttonArray):
-    return [simulatePress(boolArray, button) for button in buttonArray]
+def getNeighbors(numArray, buttonArray):
+    return [simulatePress(numArray, button) for button in buttonArray]
 
 def minPresses(startingConfig, targetConfig, buttonArray):
     queue = deque([(startingConfig, 0)])
@@ -64,7 +71,7 @@ def minPresses(startingConfig, targetConfig, buttonArray):
 
 
 def minPressesWrapper(targetConfig, buttonArray):
-    return minPresses([False]*len(targetConfig), targetConfig, buttonArray)
+    return minPresses([0]*len(targetConfig), targetConfig, buttonArray)
 
     
 
@@ -72,11 +79,13 @@ def minPressesWrapper(targetConfig, buttonArray):
 
 presses = []
 for line in clean_lines:
-    configString, *buttons, joltages = line.split(" ")
+    configString, *buttons, joltageString = line.split(" ")
     targetConfig = stringToBoolArray(configString)
+
+    joltages = stringToNumArray(joltageString)
     buttonArray = [stringToButton(button) for button in buttons]
     
-    ans = minPressesWrapper(targetConfig, buttonArray)
+    ans = minPressesWrapper(joltages, buttonArray)
     presses.append(ans)
 
 print("presses:", presses)
