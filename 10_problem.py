@@ -83,7 +83,16 @@ def getBestButton(startConfig, targetConfig, buttonArray):
         
 
 
-def minPresses(startConfig, targetConfig, buttonArray, level):
+def minPresses(startConfig, targetConfig, allButtons, level, memo, invalidButtons):
+
+    memoKey = (tuple(invalidButtons), tuple(startConfig))
+    buttonArray = [allButtons[i] for i in range(0, len(allButtons)) if i not in invalidButtons]
+    # print("memoKey:", memoKey)
+    # input("enter to con")
+    if memoKey in memo:
+        print("using memo!", memoKey)
+        return memo[memoKey]
+
     if len(buttonArray) == 1:
         hitsNeeded = [slotEnd - slotStart for slotEnd, slotStart in zip(targetConfig, startConfig)]
         k = max(hitsNeeded)
@@ -93,6 +102,15 @@ def minPresses(startConfig, targetConfig, buttonArray, level):
             return float('inf')
         return k
     bestButton, fullyDetermined, slot, upperBoundPresses = getBestButton(startConfig, targetConfig, buttonArray)
+    newInvalidIndex = allButtons.index(bestButton)
+    # print("allButtons: ", allButtons)
+    # print("invalidButtons:", invalidButtons)
+    # print("buttonArray:", buttonArray)
+
+    # print("bestButton: ", bestButton)
+    # print("newInvalidIndex:", newInvalidIndex)
+    # input("enter to con")
+    # print()
     if fullyDetermined:
         pressesRequired = targetConfig[slot] - startConfig[slot]
         if pressesRequired < 0:
@@ -102,19 +120,25 @@ def minPresses(startConfig, targetConfig, buttonArray, level):
         larger = [s > t for s,t in zip(newConfig, targetConfig)]
         if any(larger):
             return float('inf')
-        return pressesRequired + minPresses(newConfig, targetConfig, otherButtons, level+1)
+        ans = pressesRequired + minPresses(newConfig, targetConfig, allButtons, level+1, memo, invalidButtons=invalidButtons+[newInvalidIndex])
+        memo[memoKey] = ans
+        return ans
 
     options = []
     for numPresses in range(upperBoundPresses, -1, -1):
         start = simulatePresses(startConfig, bestButton, numPresses)
-        otherButtons = [b for b in buttonArray if b != bestButton]
-        ans = numPresses + minPresses(start, targetConfig, otherButtons, level+1)
+        # print("buttonArray:", buttonArray)
+        # input()
+        # otherButtons = [b for b in buttonArray if b != bestButton]
+        ans = numPresses + minPresses(start, targetConfig, allButtons, level+1, memo, invalidButtons=invalidButtons+[newInvalidIndex])
         options.append(ans)
-    return min(options)
+    result = min(options)
+    memo[memoKey] = result
+    return result
 
 
 def minPressesWrapper(targetConfig, buttonArray):
-    return minPresses([0]*len(targetConfig), targetConfig, buttonArray, level=0)
+    return minPresses([0]*len(targetConfig), targetConfig, buttonArray, level=0, memo={}, invalidButtons=[])
 
     
 
