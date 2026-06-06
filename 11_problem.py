@@ -12,7 +12,7 @@
 import math
 import copy
 
-f_name = "11_example_2.txt"
+f_name = "11_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -55,12 +55,13 @@ def findPaths(source, dest, adjList, currentPath = set(), memo={}):
     memo[memoKey] = count
     return count
 
-ans = findPaths("fft", "dac", adjList)
-print("ans:", ans)
 
 svr2dacPaths = findPaths("svr", "dac", adjList)
+print('1')
 dac2fftPaths = findPaths("dac", "fft", adjList)
+print('2')
 fft2outPaths = findPaths("fft", "out", adjList)
+print('3')
 
 route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
 route1 = math.prod(route1Paths)
@@ -70,8 +71,11 @@ print("route1Paths:", route1Paths)
 
 
 svr2fftPaths = findPaths("svr", "fft", adjList)
+print('4')
 fft2dacPaths = findPaths("fft", "dac", adjList)
+print('5')
 dac2outPaths = findPaths("dac", "out", adjList)
+print('6')
 
 route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
 route2 = math.prod(route2Paths)
