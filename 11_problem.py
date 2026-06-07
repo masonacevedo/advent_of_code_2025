@@ -32,7 +32,11 @@ for line in clean_lines:
 
 ADJACENCY_LIST['out'] = []
 
-def findPath(source, dest, adjList, currentPath = set()):
+def findPath(source, dest, adjList, currentPath = None):
+    if source not in adjList:
+        return None
+    if currentPath is None:
+        currentPath = set()
 
     if dest in adjList[source]:
         return [source, dest]
@@ -58,31 +62,20 @@ def pathExists(source, dest, adjList):
         return True
 
 
-# def isChokepoint(candidate, source, dest, adjList):
-#     withCandidate = pathExists(source, dest, adjList)
-#     savedNeighbors = adjList[candidate]
+def isChokepoint(candidate, source, dest, adjList):
+    withCandidate = pathExists(source, dest, adjList)
+    savedNeighbors = adjList[candidate]
 
-#     del adjList[candidate]
-#     woutCandidate = pathExists(source, dest, adjList)
-#     adjList[candidate] = savedNeighbors
+    del adjList[candidate]
+    woutCandidate = pathExists(source, dest, adjList)
+    adjList[candidate] = savedNeighbors
 
-#     return (withCandidate and not(woutCandidate))
+    return (withCandidate and not(woutCandidate))
 
 
-for k,v in ADJACENCY_LIST.items():
-    print(k,"|",v)
-print()
-p = pathExists("you", "out", ADJACENCY_LIST)
-print("p:", p)
-del ADJACENCY_LIST["bbb"]
 
-for k,v in ADJACENCY_LIST.items():
-    print(k,"|",v)
-print()
-p = pathExists("you", "out", ADJACENCY_LIST)
-print("p:", p)
-
-# ans = isChokepoint("bbb", "you", "out", ADJACENCY_LIST)
+ans = isChokepoint("ccc", "you", "out", ADJACENCY_LIST)
+print("ans:", ans)
 
 # def findPaths(source, dest, adjList, currentPath = set(), memo={}):
 
