@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_example_2.txt"
+f_name = "11_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -156,13 +156,7 @@ def findCycle(adjList):
 def topSort(adjList, currentNode, visited, currentPath):
 
     if currentNode in currentPath:
-        print("found a cycle!")
-        print("currentNode:", currentNode)
-        print("currentPath:", currentPath)
-        ans = currentPath + [currentNode]
-        print("ans:", ans)
-        input("enter to con")
-        return ans
+        return currentPath + [currentNode]
 
     if currentNode in visited:
         return None
