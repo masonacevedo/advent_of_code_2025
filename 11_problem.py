@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_example.txt"
+f_name = "11_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -73,33 +73,73 @@ def isChokepoint(candidate, source, dest, adjList):
     return (withCandidate and not(woutCandidate))
 
 
+def rotateOrder(L):
+    n = len(L)
+    midPoint = n//2
+    yield L[midPoint]
+    for i in range(1, midPoint+1):
+        yield L[midPoint - i]
+        if midPoint + i >= n:
+            return
+        yield L[midPoint + i]
 
-ans = isChokepoint("ccc", "you", "out", ADJACENCY_LIST)
-print("ans:", ans)
 
-# def findPaths(source, dest, adjList, currentPath = set(), memo={}):
+def countPathsNaive(source, dest, adjList, currentPath = None, memo = None):
+    if currentPath is None:
+        currentPath = set()
+    if memo is None:
+        memo = {}
 
-#     memoKey = (source, dest, frozenset(currentPath))
-#     if memoKey in memo:
-#         return memo[memoKey]
+    memoKey = (source, dest, frozenset(currentPath))
+    if memoKey in memo:
+        print("using memo!")
+        return memo[memoKey]
 
-#     if source == dest:
-#         return 1
+    if source == dest:
+        return 1
 
-#     if source in currentPath:
+    if source in currentPath:
+        return 0
+
+    currentPath.add(source)
+    count = 0
+    for neighbor in adjList[source]:
+        pathsFromNeighbor = countPathsNaive(neighbor, dest, adjList, currentPath, memo)
+        count += pathsFromNeighbor
+        
+    currentPath.remove(source)
+    memo[memoKey] = count
+    return count
+
+# def countPaths(source, dest, adjList):
+#     path = findPath(source, dest, adjList)
+#     if path is None:
 #         return 0
 
-#     currentPath.add(source)
-#     count = 0
-#     for neighbor in adjList[source]:
-#         pathsFromNeighbor = findPaths(neighbor, dest, adjList, currentPath, memo)
-#         count += pathsFromNeighbor
-#         if pathsFromNeighbor is None:
-#             continue
+#     # don't need the source and dest node
+#     # on the actual path.
+#     del path[0]
+#     del path[-1]
 
-#     currentPath.remove(source)
-#     memo[memoKey] = count
-#     return count
+#     print("path:", path)
+    
+#     rotatedNodes = list(rotateOrder(path))
+#     print("path:", path)
+#     print("rotatedNodes:", rotatedNodes)
+    
+#     for node in rotatedNodes:
+#         if isChokepoint(node, source, dest, adjList):
+#             print("chokePoint found!")
+#             pass
+    
+#     input("enter to con")
+    
+    # if no chokepoints are found, return the brute force path count! 
+
+ans = countPathsNaive("you", "out", ADJACENCY_LIST)
+print("ans:", ans)
+
+
 
 
 
