@@ -84,16 +84,9 @@ def rotateOrder(L):
         yield L[midPoint + i]
 
 
-def countPathsNaive(source, dest, adjList, currentPath = None, memo = None):
+def countPathsNaive(source, dest, adjList, currentPath = None):
     if currentPath is None:
         currentPath = set()
-    if memo is None:
-        memo = {}
-
-    memoKey = (source, dest, frozenset(currentPath))
-    if memoKey in memo:
-        print("using memo!")
-        return memo[memoKey]
 
     if source == dest:
         return 1
@@ -104,11 +97,10 @@ def countPathsNaive(source, dest, adjList, currentPath = None, memo = None):
     currentPath.add(source)
     count = 0
     for neighbor in adjList[source]:
-        pathsFromNeighbor = countPathsNaive(neighbor, dest, adjList, currentPath, memo)
+        pathsFromNeighbor = countPathsNaive(neighbor, dest, adjList, currentPath)
         count += pathsFromNeighbor
         
     currentPath.remove(source)
-    memo[memoKey] = count
     return count
 
 # def countPaths(source, dest, adjList):
