@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_example_2.txt"
+f_name = "11_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -85,6 +85,10 @@ def rotateOrder(L):
 
 
 def countPathsNaive(source, dest, adjList, currentPath = None):
+    # print("source:", source)
+    # print("dest:  ", dest)
+    # print("currentPath:", currentPath)
+    # input("enter to con")
     if currentPath is None:
         currentPath = set()
 
@@ -104,8 +108,12 @@ def countPathsNaive(source, dest, adjList, currentPath = None):
     return count
 
 def countPaths(source, dest, adjList):
+    print("source:", source)
+    print("dest:  ", dest)
 
+    print("finding one path...")
     path = findPath(source, dest, adjList)
+    print("path found")
     if path is None:
         return 0
 
@@ -114,6 +122,7 @@ def countPaths(source, dest, adjList):
     del path[0]
     del path[-1]
     if len(path) == 0:
+        print("naive counting..")
         return countPathsNaive(source, dest, adjList)
     # print("source:", source)
     # print("dest:  ", dest)
@@ -121,37 +130,47 @@ def countPaths(source, dest, adjList):
     # print()
     # input("enter to con")
     rotatedNodes = list(rotateOrder(path))
-    
+    print("nodes rotated")
     for node in rotatedNodes:
+        print("looking at node:", node)
         if isChokepoint(node, source, dest, adjList):
+            print("source:     ", source)
+            print("dest:       ", dest)
+            print("chokePoint: ", node)
+            print("chokepoint found!")
+            input("enter to continue")
+            print()
             firstHalf = countPaths(source, node, adjList)
             secondHalf = countPaths(node, dest, adjList)
             return firstHalf*secondHalf
     
-
+    print("naive counting...")
     return countPathsNaive(source, dest, adjList)
 
 
 
 
-svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
-print('1')
-dac2fftPaths = countPaths("dac", "fft", ADJACENCY_LIST)
-print('2')
-fft2outPaths = countPaths("fft", "out", ADJACENCY_LIST)
-print('3')
+# svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
+# print('1 progress')
+# dac2fftPaths = countPaths("dac", "fft", ADJACENCY_LIST)
+# print('2 progress')
+# fft2outPaths = countPaths("fft", "out", ADJACENCY_LIST)
+# print('3 progress')
 
-route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
-route1Product = math.prod(route1Paths)
-print("route1Paths:", route1Paths)
+# route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
+# route1Product = math.prod(route1Paths)
+# print("route1Paths:", route1Paths)
 
 
-svr2fftPaths = countPaths("svr", "fft", ADJACENCY_LIST)
-fft2dacPaths = countPaths("fft", "dac", ADJACENCY_LIST)
-dac2outPaths = countPaths("dac", "out", ADJACENCY_LIST)
+ans = svr2fftPaths = countPaths("dac", "out", ADJACENCY_LIST)
+print("ans:", ans)
+# print('4 progress')
+# fft2dacPaths = countPaths("fft", "dac", ADJACENCY_LIST)
+# print('5 progress')
+# dac2outPaths = countPaths("dac", "out", ADJACENCY_LIST)
 
-route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
-route2Product = math.prod(route2Paths)
-print("route2Paths:", route2Paths)
+# route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
+# route2Product = math.prod(route2Paths)
+# print("route2Paths:", route2Paths)
 
-print("ans:", route1Product + route2Product)
+# print("ans:", route1Product + route2Product)
