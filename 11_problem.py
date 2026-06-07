@@ -10,7 +10,7 @@
 #           if there are no chokepoints, then resort to a brute force
 #           enumeration. 
 #     def isChokepoint(source, target, candidate):
-#       remove candidate from adjacency list
+#       remove candidate from adjList
 #       check if there's a path from source to target.
 #       if there is, return True.
 #       otherwise, returen False
@@ -24,17 +24,13 @@ with open(f_name, "r+") as f:
 
 clean_lines = [line.replace("\n", "") for line in lines]
 
-adjList = {}
+ADJACENCY_LIST = {}
 for line in clean_lines:
     node, *neighbors = line.split(" ")
     node = node[0:-1]
-    adjList[node] = neighbors
+    ADJACENCY_LIST[node] = neighbors
 
-adjList['out'] = []
-
-for k,v in adjList.items():
-    print(k,"|",v)
-print()
+ADJACENCY_LIST['out'] = []
 
 def findPath(source, dest, adjList, currentPath = set()):
 
@@ -53,21 +49,40 @@ def findPath(source, dest, adjList, currentPath = set()):
 
     return None
 
-ans = findPath("you", "out", adjList)
-print("ans:", ans)
 
-def isChokepoint(candidate, source, dest, adjList):
-
-    withCandidate = pathExists(source, dest, adjList)
-    savedNeighbors = adjList[candidate]
-
-    del adjList[candidate]
-    woutCandidate = pathExists(source, dest, adjList)
-    adjList[candidate] = neighbors
-
-    return (withCandidate and not(woutCandidate))
+def pathExists(source, dest, adjList):
+    path = findPath(source, dest, adjList)
+    if path is None:
+        return False
+    else:
+        return True
 
 
+# def isChokepoint(candidate, source, dest, adjList):
+#     withCandidate = pathExists(source, dest, adjList)
+#     savedNeighbors = adjList[candidate]
+
+#     del adjList[candidate]
+#     woutCandidate = pathExists(source, dest, adjList)
+#     adjList[candidate] = savedNeighbors
+
+#     return (withCandidate and not(woutCandidate))
+
+
+for k,v in ADJACENCY_LIST.items():
+    print(k,"|",v)
+print()
+p = pathExists("you", "out", ADJACENCY_LIST)
+print("p:", p)
+del ADJACENCY_LIST["bbb"]
+
+for k,v in ADJACENCY_LIST.items():
+    print(k,"|",v)
+print()
+p = pathExists("you", "out", ADJACENCY_LIST)
+print("p:", p)
+
+# ans = isChokepoint("bbb", "you", "out", ADJACENCY_LIST)
 
 # def findPaths(source, dest, adjList, currentPath = set(), memo={}):
 
