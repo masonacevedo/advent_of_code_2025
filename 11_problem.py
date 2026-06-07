@@ -148,31 +148,39 @@ def countPaths(source, dest, adjList):
     return countPathsNaive(source, dest, adjList)
 
 
-def hasCycle(adjList):
+def findCycle(adjList):
     startNode = "svr"
-    return topSort(adjList, startNode, visited = set(), currentPath = set())
-    
+    return topSort(adjList, startNode, visited = set(), currentPath = [])
+
+
 def topSort(adjList, currentNode, visited, currentPath):
 
     if currentNode in currentPath:
-        return True
+        print("found a cycle!")
+        print("currentNode:", currentNode)
+        print("currentPath:", currentPath)
+        ans = currentPath + [currentNode]
+        print("ans:", ans)
+        input("enter to con")
+        return ans
 
     if currentNode in visited:
-        return False
+        return None
 
-    currentPath.add(currentNode)
+    currentPath.append(currentNode)
 
     for neighbor in adjList[currentNode]:
-        if topSort(adjList, neighbor, visited, currentPath):
-            return True
+        result = topSort(adjList, neighbor, visited, currentPath)
+        if result:
+            return result
 
     currentPath.remove(currentNode)
 
     visited.add(currentNode)
-    return False
+    return None
 
 
-print(hasCycle(ADJACENCY_LIST))
+print(findCycle(ADJACENCY_LIST))
 
 
 # svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
