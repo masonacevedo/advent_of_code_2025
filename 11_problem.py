@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_input.txt"
+f_name = "11_example_2.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -148,6 +148,31 @@ def countPaths(source, dest, adjList):
     return countPathsNaive(source, dest, adjList)
 
 
+def hasCycle(adjList):
+    startNode = "svr"
+    return topSort(adjList, startNode, visited = set(), currentPath = set())
+    
+def topSort(adjList, currentNode, visited, currentPath):
+
+    if currentNode in currentPath:
+        return True
+
+    if currentNode in visited:
+        return False
+
+    currentPath.add(currentNode)
+
+    for neighbor in adjList[currentNode]:
+        if topSort(adjList, neighbor, visited, currentPath):
+            return True
+
+    currentPath.remove(currentNode)
+
+    visited.add(currentNode)
+    return False
+
+
+print(hasCycle(ADJACENCY_LIST))
 
 
 # svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
@@ -162,8 +187,8 @@ def countPaths(source, dest, adjList):
 # print("route1Paths:", route1Paths)
 
 
-ans = svr2fftPaths = countPaths("dac", "out", ADJACENCY_LIST)
-print("ans:", ans)
+# ans = svr2fftPaths = countPaths("dac", "out", ADJACENCY_LIST)
+# print("ans:", ans)
 # print('4 progress')
 # fft2dacPaths = countPaths("fft", "dac", ADJACENCY_LIST)
 # print('5 progress')
