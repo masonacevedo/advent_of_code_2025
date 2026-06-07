@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_input.txt"
+f_name = "11_example_2.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -103,45 +103,55 @@ def countPathsNaive(source, dest, adjList, currentPath = None):
     currentPath.remove(source)
     return count
 
-# def countPaths(source, dest, adjList):
-#     path = findPath(source, dest, adjList)
-#     if path is None:
-#         return 0
+def countPaths(source, dest, adjList):
 
-#     # don't need the source and dest node
-#     # on the actual path.
-#     del path[0]
-#     del path[-1]
+    path = findPath(source, dest, adjList)
+    if path is None:
+        return 0
 
-#     print("path:", path)
+    # don't need the source and dest node
+    # on the actual path.
+    del path[0]
+    del path[-1]
+    if len(path) == 0:
+        return countPathsNaive(source, dest, adjList)
+    # print("source:", source)
+    # print("dest:  ", dest)
+    # print("len(path):", len(path))
+    # print()
+    # input("enter to con")
+    rotatedNodes = list(rotateOrder(path))
     
-#     rotatedNodes = list(rotateOrder(path))
-#     print("path:", path)
-#     print("rotatedNodes:", rotatedNodes)
+    for node in rotatedNodes:
+        if isChokepoint(node, source, dest, adjList):
+            firstHalf = countPaths(source, node, adjList)
+            secondHalf = countPaths(node, dest, adjList)
+            return firstHalf*secondHalf
     
-#     for node in rotatedNodes:
-#         if isChokepoint(node, source, dest, adjList):
-#             print("chokePoint found!")
-#             pass
-    
-#     input("enter to con")
-    
-    # if no chokepoints are found, return the brute force path count! 
 
-ans = countPathsNaive("you", "out", ADJACENCY_LIST)
-print("ans:", ans)
+    return countPathsNaive(source, dest, adjList)
 
 
 
 
+svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
+print('1')
+dac2fftPaths = countPaths("dac", "fft", ADJACENCY_LIST)
+print('2')
+fft2outPaths = countPaths("fft", "out", ADJACENCY_LIST)
+print('3')
 
-# svr2dacPaths = findPaths("you", "hho", adjList)
-# print('1')
-# dac2fftPaths = findPaths("hho", "nhm", adjList)
-# print('2')
-# fft2outPaths = findPaths("nhm", "out", adjList)
-# print('3')
+route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
+route1Product = math.prod(route1Paths)
+print("route1Paths:", route1Paths)
 
-# route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
-# route1 = math.prod(route1Paths)
 
+svr2fftPaths = countPaths("svr", "fft", ADJACENCY_LIST)
+fft2dacPaths = countPaths("fft", "dac", ADJACENCY_LIST)
+dac2outPaths = countPaths("dac", "out", ADJACENCY_LIST)
+
+route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
+route2Product = math.prod(route2Paths)
+print("route2Paths:", route2Paths)
+
+print("ans:", route1Product + route2Product)
