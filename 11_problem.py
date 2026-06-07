@@ -1,18 +1,23 @@
-# thought: if the path is doomed. i.e. impossible for this path to reach out
-# while having both svr and fft on it, then we should stop branching out and
-# return 0 early. the question is, how do we do that... 
-# thought: is there an easy way to determine this? or a moderately expensive way even? 
-#   thought: before we do the real path search, we compute: 
-#            for each node, how many paths are there from this path to
-#
-# thought: if i'm looking for all paths from FOO to BAR, I could cound them naively.
-#          HOWEVER, I could also count all paths from FOO to INT, and from INT to BAR.
-#          If there's 8 paths from FOO to INT, and 9 paths from INT to BAR, then
-#          I know there's 72 paths overall!! 
+# Algorithm:
+#     def ChokepointCount(source, target):
+#           identify one path from source to target.
+#           starting from the middle node:
+#               determine if this node is a chokpoint.
+#               if it is, recursively chokepoint count the number
+#               of paths from source to the chokpoint, and also from
+#               the chokepoint to the source. 
+#               multiply these for the answer.
+#           if there are no chokepoints, then resort to a brute force
+#           enumeration. 
+#     def isChokepoint(source, target, candidate):
+#       remove candidate from adjacency list
+#       check if there's a path from source to target.
+#       if there is, return True.
+#       otherwise, returen False
 import math
 import copy
 
-f_name = "11_input.txt"
+f_name = "11_example.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -31,55 +36,72 @@ for k,v in adjList.items():
     print(k,"|",v)
 print()
 
-def findPaths(source, dest, adjList, currentPath = set(), memo={}):
+def findPath(source, dest, adjList, currentPath = set()):
 
-    memoKey = (source, dest, frozenset(currentPath))
-    if memoKey in memo:
-        return memo[memoKey]
-
-    if source == dest:
-        return 1
+    if dest in adjList[source]:
+        return [source, dest]
     
     if source in currentPath:
-        return 0
+        return None
     
     currentPath.add(source)
-    count = 0
+
     for neighbor in adjList[source]:
-        pathsFromNeighbor = findPaths(neighbor, dest, adjList, currentPath, memo)
-        count += pathsFromNeighbor
-        if pathsFromNeighbor is None:
-            continue
+        p = findPath(neighbor, dest, adjList)
+        if p is not None:
+            return [source] + p
 
-    currentPath.remove(source)
-    memo[memoKey] = count
-    return count
+    return None
 
+ans = findPath("you", "out", adjList)
+print("ans:", ans)
 
-svr2dacPaths = findPaths("svr", "dac", adjList)
-print('1')
-dac2fftPaths = findPaths("dac", "fft", adjList)
-print('2')
-fft2outPaths = findPaths("fft", "out", adjList)
-print('3')
+def isChokepoint(candidate, source, dest, adjList):
 
-route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
-route1 = math.prod(route1Paths)
+    withCandidate = pathExists(source, dest, adjList)
+    savedNeighbors = adjList[candidate]
 
+    del adjList[candidate]
+    woutCandidate = pathExists(source, dest, adjList)
+    adjList[candidate] = neighbors
 
-print("route1Paths:", route1Paths)
+    return (withCandidate and not(woutCandidate))
 
 
-svr2fftPaths = findPaths("svr", "fft", adjList)
-print('4')
-fft2dacPaths = findPaths("fft", "dac", adjList)
-print('5')
-dac2outPaths = findPaths("dac", "out", adjList)
-print('6')
 
-route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
-route2 = math.prod(route2Paths)
+# def findPaths(source, dest, adjList, currentPath = set(), memo={}):
 
-print("route2Paths:", route2Paths)
+#     memoKey = (source, dest, frozenset(currentPath))
+#     if memoKey in memo:
+#         return memo[memoKey]
 
-print("ans:", route1 + route2)
+#     if source == dest:
+#         return 1
+
+#     if source in currentPath:
+#         return 0
+
+#     currentPath.add(source)
+#     count = 0
+#     for neighbor in adjList[source]:
+#         pathsFromNeighbor = findPaths(neighbor, dest, adjList, currentPath, memo)
+#         count += pathsFromNeighbor
+#         if pathsFromNeighbor is None:
+#             continue
+
+#     currentPath.remove(source)
+#     memo[memoKey] = count
+#     return count
+
+
+
+# svr2dacPaths = findPaths("you", "hho", adjList)
+# print('1')
+# dac2fftPaths = findPaths("hho", "nhm", adjList)
+# print('2')
+# fft2outPaths = findPaths("nhm", "out", adjList)
+# print('3')
+
+# route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
+# route1 = math.prod(route1Paths)
+
