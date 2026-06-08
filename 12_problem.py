@@ -1,7 +1,7 @@
 
 import copy
 
-f_name = "12_example.txt"
+f_name = "12_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -162,15 +162,15 @@ def bestPlacementsWrapper(shapeMap, numRows, numCols):
 
 def findPlacements(shapes):
     ans = {}
-    for row in range(0, 7):
-        for col in range(0, 7):
+    for row in range(0, 5):
+        for col in range(0, 5):
             key = (row, col)
             ans[key] = bestPlacementsWrapper(shapes, row, col)
     return ans
 PLACEMENTS = findPlacements(shapeMapping)
 # print("PLACEMENTS:", PLACEMENTS)
 
-ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(6,6)]
+ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(4,4)]
 print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
 PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
 SORTED_PAIRS = sorted(PAIRS,
@@ -183,4 +183,4 @@ for p, c in SORTED_PAIRS:
         print(row)
     for k,v in c.items():
         print(k,"|",v)
-    # input("enter to con")
+    input("enter to con")
