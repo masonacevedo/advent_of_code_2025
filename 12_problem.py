@@ -43,10 +43,10 @@ def buildShape(shape):
         grid.append(line)
     return grid
 
-shapes = splitShapeLines(shapeLines)
+shapeLines = splitShapeLines(shapeLines)
 
-shapeMap = {int(shape[0][0:-1]): buildShape(shape) for shape in shapes}
-print(shapeMap)
+shapeMapping = {int(shape[0][0:-1]): buildShape(shape) for shape in shapeLines}
+print(shapeMapping)
 print(sizes)
 
 def extractRequirements(size):
@@ -59,48 +59,78 @@ def extractRequirements(size):
 
 print(extractRequirements(sizes[1]))
 
-def placeInGrid(grid, shape, startRow, startCol):
+def placeInGrid(grid, shape, startRow, startCol, availableSquares):
     
     shapeHeight = len(shape)
     shapeWidth = len(shape[0])
 
     if (startRow + shapeHeight) > len(grid):
         # print("rows too big!")
-        return None
+        return False
     
     if (startCol + shapeWidth) > len(grid[0]):
         # print('cols too big!')
-        return None
+        return False
     
-    ans = copy.copy(grid)
+    usedSpots = []
     for row in range(0, shapeHeight):
         for col in range(0, shapeWidth):
             shapeChar = shape[row][col]
             gridChar = grid[row + startRow][col + startCol]
             if gridChar == "#" and shapeChar == "#":
-                # print("row:", row)
-                # print("col:", col)
-                # print("shapeChar:", shapeChar)
-                # print("gridChar:", gridChar)
-                # print("overlapping!")
-                return None
-            
-            if gridChar == "#" or shapeChar == "#":
-                ans[row+startRow][col+startCol] = "#"
+                return False
+            elif gridChar == "#" and shapeChar == ".":
+                pass
+            elif gridChar == "." and shapeChar == "#":
+                usedSpots.append((row + startRow, col+startCol))
             else:
-                ans[row+startRow][col+startCol] = "."
-    return ans
+                pass
+    for spot in usedSpots:
+        availableSquares.remove(spot)
+        row, col = spot
+        grid[row][col] = "#"
+    
+    return True
+
+NUMROWS = 6
+NUMCOLS = 3
+GRID = [["." for _ in range(0, NUMCOLS)] for _ in range(0, NUMROWS)]
+
+AVAILABLE_SQUARES = set([(row, col) for row in range(0, NUMROWS) for col in range(0, NUMCOLS)])
+
+print(GRID)
+print(len(AVAILABLE_SQUARES))
+placeInGrid(GRID, shapeMapping[0], 0, 0, AVAILABLE_SQUARES)
+print(GRID)
+print(len(AVAILABLE_SQUARES))
+
+# def shapeSize(shape):
+#     return sum((row.count("#") for row in shape))
+
+# def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
+#     ans = []
+#     for shapeIndex, shape in shapeMap.items():
+#         if shapeSize(shape) > len(availableSquares):
+#             continue
+#         # availableSquares = 
+#     return ans
+        
 
 
-grid = [
-    [".",".","."],
-    [".",".","."],
-    [".",".","."]
-]
+# def bestPlacementsWrapper(shapeMap, numRows, numCols):
+#     grid = [["." for _ in range(numCols)] for _ in range(0, numRows)]
+#     placementCounts = {shape:0 for shape in shapeMap}
+#     availableSquares = set([(row, col) for row in range(0, numRows) for col in range(0, numCols)])
+#     print(f'availableSquares: {availableSquares}')
+#     input("enter to con")
+#     return bestPlacements(shapeMap, grid, placementCounts, availableSquares)
 
-print(shapeMap)
-first = placeInGrid(grid, shapeMap[0], 0,0)
-print("first placement :", first)
 
-# second = placeInGrid(first, shapeMap[1], 1, 0)
-# print("second placement:", second)
+# def findPlacements(shapes):
+#     ans = {}
+#     for row in range(0, 11):
+#         for col in range(0, 11):
+#             key = (row, col)
+#             ans[key] = bestPlacementsWrapper(shapes, row, col)
+#     return ans
+# findPlacements(shapeMapping)
