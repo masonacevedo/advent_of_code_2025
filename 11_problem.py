@@ -1,19 +1,3 @@
-# Algorithm:
-#     def ChokepointCount(source, target):
-#           identify one path from source to target.
-#           starting from the middle node:
-#               determine if this node is a chokpoint.
-#               if it is, recursively chokepoint count the number
-#               of paths from source to the chokpoint, and also from
-#               the chokepoint to the source. 
-#               multiply these for the answer.
-#           if there are no chokepoints, then resort to a brute force
-#           enumeration. 
-#     def isChokepoint(source, target, candidate):
-#       remove candidate from adjList
-#       check if there's a path from source to target.
-#       if there is, return True.
-#       otherwise, return False
 import math
 import copy
 
