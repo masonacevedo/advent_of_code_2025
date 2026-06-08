@@ -230,18 +230,11 @@ def computeTopOrder(adjList):
 
 def countPathsDP(adjList):
     topOrder = computeTopOrder(adjList)
-    # print("topOrder:", topOrder)
-    # print("adjList:", adjList)
-    # input("enter to con")
 
     DPTable = {node:0 for node in topOrder}
-    # print("DPTable:", DPTable)
-    # input("enter to con")
     DPTable["svr"] = 1
 
     for node in topOrder:
-        # print("node:", node)
-        # input("enter to con")
         for neighbor in adjList[node]:
             DPTable[neighbor] += DPTable[node]
     print("DPTable:", DPTable)
