@@ -1,4 +1,6 @@
 
+import copy
+
 f_name = "12_example.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
@@ -43,7 +45,7 @@ def buildShape(shape):
 
 shapes = splitShapeLines(shapeLines)
 
-shapeMap = {shape[0]: buildShape(shape) for shape in shapes}
+shapeMap = {int(shape[0][0:-1]): buildShape(shape) for shape in shapes}
 print(shapeMap)
 print(sizes)
 
@@ -57,3 +59,48 @@ def extractRequirements(size):
 
 print(extractRequirements(sizes[1]))
 
+def placeInGrid(grid, shape, startRow, startCol):
+    
+    shapeHeight = len(shape)
+    shapeWidth = len(shape[0])
+
+    if (startRow + shapeHeight) > len(grid):
+        # print("rows too big!")
+        return None
+    
+    if (startCol + shapeWidth) > len(grid[0]):
+        # print('cols too big!')
+        return None
+    
+    ans = copy.copy(grid)
+    for row in range(0, shapeHeight):
+        for col in range(0, shapeWidth):
+            shapeChar = shape[row][col]
+            gridChar = grid[row + startRow][col + startCol]
+            if gridChar == "#" and shapeChar == "#":
+                # print("row:", row)
+                # print("col:", col)
+                # print("shapeChar:", shapeChar)
+                # print("gridChar:", gridChar)
+                # print("overlapping!")
+                return None
+            
+            if gridChar == "#" or shapeChar == "#":
+                ans[row+startRow][col+startCol] = "#"
+            else:
+                ans[row+startRow][col+startCol] = "."
+    return ans
+
+
+grid = [
+    [".",".","."],
+    [".",".","."],
+    [".",".","."]
+]
+
+print(shapeMap)
+first = placeInGrid(grid, shapeMap[0], 0,0)
+print("first placement :", first)
+
+# second = placeInGrid(first, shapeMap[1], 1, 0)
+# print("second placement:", second)
