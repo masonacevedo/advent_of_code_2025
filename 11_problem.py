@@ -228,41 +228,41 @@ def computeTopOrder(adjList):
     ans = topOrderingHelper(adjListCopy, inDegrees)
     return ans
 
-def countPathsDP(adjList):
+def countPathsDP(adjList, source, target):
     topOrder = computeTopOrder(adjList)
 
     DPTable = {node:0 for node in topOrder}
-    DPTable["svr"] = 1
+    DPTable[source] = 1
+    startIndex = topOrder.index(source)
+    endIndex = topOrder.index(target)
 
-    for node in topOrder:
+    # print("topOrder:", topOrder)
+    for node in topOrder[startIndex:endIndex]:
         for neighbor in adjList[node]:
             DPTable[neighbor] += DPTable[node]
-    print("DPTable:", DPTable)
+    # print("DPTable:", DPTable)
+    return DPTable[target]
 
-print(countPathsDP(ADJACENCY_LIST))
+svr2dacPaths = countPathsDP(ADJACENCY_LIST, "svr", "dac")
+print('1 progress')
+dac2fftPaths = countPathsDP(ADJACENCY_LIST, "dac", "fft")
+print('2 progress')
+fft2outPaths = countPathsDP(ADJACENCY_LIST, "fft", "out")
+print('3 progress')
 
-
-# svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
-# print('1 progress')
-# dac2fftPaths = countPaths("dac", "fft", ADJACENCY_LIST)
-# print('2 progress')
-# fft2outPaths = countPaths("fft", "out", ADJACENCY_LIST)
-# print('3 progress')
-
-# route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
-# route1Product = math.prod(route1Paths)
-# print("route1Paths:", route1Paths)
+route1Paths = [svr2dacPaths, dac2fftPaths, fft2outPaths]
+route1Product = math.prod(route1Paths)
+print("route1Paths:", route1Paths)
 
 
-# ans = svr2fftPaths = countPaths("dac", "out", ADJACENCY_LIST)
-# print("ans:", ans)
-# print('4 progress')
-# fft2dacPaths = countPaths("fft", "dac", ADJACENCY_LIST)
-# print('5 progress')
-# dac2outPaths = countPaths("dac", "out", ADJACENCY_LIST)
+svr2fftPaths = countPathsDP(ADJACENCY_LIST, "svr", "fft")
+print('4 progress')
+fft2dacPaths = countPathsDP(ADJACENCY_LIST, "fft", "dac")
+print('5 progress')
+dac2outPaths = countPathsDP(ADJACENCY_LIST, "dac", "out")
 
-# route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
-# route2Product = math.prod(route2Paths)
-# print("route2Paths:", route2Paths)
+route2Paths = [svr2fftPaths, fft2dacPaths, dac2outPaths]
+route2Product = math.prod(route2Paths)
+print("route2Paths:", route2Paths)
 
-# print("ans:", route1Product + route2Product)
+print("ans:", route1Product + route2Product)
