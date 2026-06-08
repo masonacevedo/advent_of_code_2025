@@ -17,7 +17,7 @@
 import math
 import copy
 
-f_name = "11_example_2.txt"
+f_name = "11_input.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
