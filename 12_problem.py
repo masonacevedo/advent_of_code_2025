@@ -46,8 +46,6 @@ def buildShape(shape):
 shapeLines = splitShapeLines(shapeLines)
 
 shapeMapping = {int(shape[0][0:-1]): buildShape(shape) for shape in shapeLines}
-print(shapeMapping)
-print(sizes)
 
 def extractRequirements(size):
     dims, counts = size.split(":")
@@ -57,8 +55,6 @@ def extractRequirements(size):
     countsRequired = counts.split(" ")[1:]
     return rows, cols, [int(count) for count in countsRequired]
 
-print(extractRequirements(sizes[1]))
-
 def placeInGrid(grid, shape, startRow, startCol, availableSquares):
     
     shapeHeight = len(shape)
@@ -66,11 +62,11 @@ def placeInGrid(grid, shape, startRow, startCol, availableSquares):
 
     if (startRow + shapeHeight) > len(grid):
         # print("rows too big!")
-        return False
+        return None, copy.copy(availableSquares)
     
     if (startCol + shapeWidth) > len(grid[0]):
         # print('cols too big!')
-        return False
+        return None, copy.copy(availableSquares)
     
     usedSpots = []
     for row in range(0, shapeHeight):
@@ -78,19 +74,22 @@ def placeInGrid(grid, shape, startRow, startCol, availableSquares):
             shapeChar = shape[row][col]
             gridChar = grid[row + startRow][col + startCol]
             if gridChar == "#" and shapeChar == "#":
-                return False
+                return None, copy.copy(availableSquares)
             elif gridChar == "#" and shapeChar == ".":
                 pass
             elif gridChar == "." and shapeChar == "#":
                 usedSpots.append((row + startRow, col+startCol))
             else:
                 pass
+
+    newGrid = copy.deepcopy(grid)
+    newAvailableSquares = copy.deepcopy(availableSquares)
     for spot in usedSpots:
-        availableSquares.remove(spot)
+        newAvailableSquares.remove(spot)
         row, col = spot
-        grid[row][col] = "#"
+        newGrid[row][col] = "#"
     
-    return True
+    return newGrid, newAvailableSquares
 
 NUMROWS = 6
 NUMCOLS = 3
@@ -98,39 +97,69 @@ GRID = [["." for _ in range(0, NUMCOLS)] for _ in range(0, NUMROWS)]
 
 AVAILABLE_SQUARES = set([(row, col) for row in range(0, NUMROWS) for col in range(0, NUMCOLS)])
 
-print(GRID)
-print(len(AVAILABLE_SQUARES))
-placeInGrid(GRID, shapeMapping[0], 0, 0, AVAILABLE_SQUARES)
-print(GRID)
-print(len(AVAILABLE_SQUARES))
+def shapeSize(shape):
+    return sum((row.count("#") for row in shape))
 
-# def shapeSize(shape):
-#     return sum((row.count("#") for row in shape))
-
-# def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
-#     ans = []
-#     for shapeIndex, shape in shapeMap.items():
-#         if shapeSize(shape) > len(availableSquares):
-#             continue
-#         # availableSquares = 
-#     return ans
+def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
+    placements = []
+    counts = []
+    placementFound = False
+    for shapeIndex, shape in shapeMap.items():
+        if shapeSize(shape) > len(availableSquares):
+            continue
+        
+        for square in availableSquares:
+            row, col = square
+            newGrid, newAvailableSquares = placeInGrid(grid, shape, row, col, availableSquares)
+            if newGrid is None:
+                continue
+            placementFound = True
+            newPlacementCounts = copy.copy(placementCounts)
+            newPlacementCounts[shapeIndex] += 1
+            recPlacements, recCounts = bestPlacements(shapeMap, newGrid, newPlacementCounts, newAvailableSquares)
+            placements += [recPlacements]
+            counts += [recCounts]
+    
+    if not(placementFound):
+        return grid, placementCounts
+    print("returning:")
+    for p in placements:
+        print(p)
+    for c in counts:
+        print(c)
+    # input("enter to con")
+    return placements, counts
         
 
 
-# def bestPlacementsWrapper(shapeMap, numRows, numCols):
-#     grid = [["." for _ in range(numCols)] for _ in range(0, numRows)]
-#     placementCounts = {shape:0 for shape in shapeMap}
-#     availableSquares = set([(row, col) for row in range(0, numRows) for col in range(0, numCols)])
-#     print(f'availableSquares: {availableSquares}')
-#     input("enter to con")
-#     return bestPlacements(shapeMap, grid, placementCounts, availableSquares)
+def bestPlacementsWrapper(shapeMap, numRows, numCols):
+    grid = [["." for _ in range(numCols)] for _ in range(0, numRows)]
+    placementCounts = {shape:0 for shape in shapeMap}
+    availableSquares = set([(row, col) for row in range(0, numRows) for col in range(0, numCols)])
+    print("numRows:", numRows)
+    print("numCols:", numCols)
+    ans = bestPlacements(shapeMap, grid, placementCounts, availableSquares)
+    print("ans:", ans)
+    # input("ans should be complex, enter to con...")
+    return ans
 
 
-# def findPlacements(shapes):
-#     ans = {}
-#     for row in range(0, 11):
-#         for col in range(0, 11):
-#             key = (row, col)
-#             ans[key] = bestPlacementsWrapper(shapes, row, col)
-#     return ans
-# findPlacements(shapeMapping)
+def findPlacements(shapes):
+    ans = {}
+    for row in range(0, 5):
+        for col in range(0, 5):
+            key = (row, col)
+            ans[key] = bestPlacementsWrapper(shapes, row, col)
+    return ans
+PLACEMENTS = findPlacements(shapeMapping)
+# print("PLACEMENTS:", PLACEMENTS)
+
+ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(4,4)]
+print("FINAL:")
+for p, c in zip(ACTUAL_PLACEMENTS, COUNTS):
+    for row in p:
+        print(row)
+    for k, v in c.items():
+        print(k,"|", c)
+    input("enter to con")
+    print()
