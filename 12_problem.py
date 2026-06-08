@@ -117,17 +117,33 @@ def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
             newPlacementCounts = copy.copy(placementCounts)
             newPlacementCounts[shapeIndex] += 1
             recPlacements, recCounts = bestPlacements(shapeMap, newGrid, newPlacementCounts, newAvailableSquares)
-            placements += [recPlacements]
-            counts += [recCounts]
+            placements += recPlacements
+            counts += recCounts
     
     if not(placementFound):
-        return grid, placementCounts
-    print("returning:")
-    for p in placements:
-        print(p)
-    for c in counts:
-        print(c)
-    # input("enter to con")
+        # print("grid:")
+        # for row in grid:
+        #     print(row)
+        # print("placementCounts:", placementCounts)
+        # input("base case. enter to con")
+        # print()
+        return [grid], [placementCounts]
+
+
+    # print("grid:")
+    # for row in grid:
+    #     print(row)
+
+    # print("returning:")
+    # print("len(placements):", len(placements))
+    # for p in placements:
+    #     print(p)
+
+    # print("len(counts):", len(counts))
+    # for c in counts:
+    #     print(c)
+    
+    # input("recursive case. enter to con")
     return placements, counts
         
 
@@ -136,30 +152,35 @@ def bestPlacementsWrapper(shapeMap, numRows, numCols):
     grid = [["." for _ in range(numCols)] for _ in range(0, numRows)]
     placementCounts = {shape:0 for shape in shapeMap}
     availableSquares = set([(row, col) for row in range(0, numRows) for col in range(0, numCols)])
-    print("numRows:", numRows)
-    print("numCols:", numCols)
-    ans = bestPlacements(shapeMap, grid, placementCounts, availableSquares)
-    print("ans:", ans)
+    # print("numRows:", numRows)
+    # print("numCols:", numCols)
+    finalPlacements, finalCounts = bestPlacements(shapeMap, grid, placementCounts, availableSquares)
+    # print("ans:", ans)
     # input("ans should be complex, enter to con...")
-    return ans
+    return finalPlacements, finalCounts
 
 
 def findPlacements(shapes):
     ans = {}
-    for row in range(0, 5):
-        for col in range(0, 5):
+    for row in range(0, 7):
+        for col in range(0, 7):
             key = (row, col)
             ans[key] = bestPlacementsWrapper(shapes, row, col)
     return ans
 PLACEMENTS = findPlacements(shapeMapping)
 # print("PLACEMENTS:", PLACEMENTS)
 
-ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(4,4)]
-print("FINAL:")
-for p, c in zip(ACTUAL_PLACEMENTS, COUNTS):
+ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(6,6)]
+print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
+PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
+SORTED_PAIRS = sorted(PAIRS,
+    key = lambda PAIR: sum(PAIR[1].values()),
+    reverse=True
+)
+
+for p, c in SORTED_PAIRS:
     for row in p:
         print(row)
-    for k, v in c.items():
-        print(k,"|", c)
-    input("enter to con")
-    print()
+    for k,v in c.items():
+        print(k,"|",v)
+    # input("enter to con")
