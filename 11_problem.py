@@ -208,8 +208,8 @@ def topOrderingHelper(adjList, inDegrees):
         
 
     
-
-def topOrder(adjList):
+def computeTopOrder(adjList):
+    
     inDegrees = {node: 0 for node in adjList.keys()}
     for node, neighbors in adjList.items():
         for neighbor in neighbors:
@@ -224,10 +224,29 @@ def topOrder(adjList):
     if not(startNode):
         return None
     
-    ans = topOrderingHelper(adjList, inDegrees)
+    adjListCopy = copy.deepcopy(adjList)
+    ans = topOrderingHelper(adjListCopy, inDegrees)
     return ans
 
-print(topOrder(ADJACENCY_LIST))
+def countPathsDP(adjList):
+    topOrder = computeTopOrder(adjList)
+    # print("topOrder:", topOrder)
+    # print("adjList:", adjList)
+    # input("enter to con")
+
+    DPTable = {node:0 for node in topOrder}
+    # print("DPTable:", DPTable)
+    # input("enter to con")
+    DPTable["svr"] = 1
+
+    for node in topOrder:
+        # print("node:", node)
+        # input("enter to con")
+        for neighbor in adjList[node]:
+            DPTable[neighbor] += DPTable[node]
+    print("DPTable:", DPTable)
+
+print(countPathsDP(ADJACENCY_LIST))
 
 
 # svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
