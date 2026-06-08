@@ -121,29 +121,31 @@ def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
             counts += recCounts
     
     if not(placementFound):
-        # print("grid:")
-        # for row in grid:
-        #     print(row)
-        # print("placementCounts:", placementCounts)
-        # input("base case. enter to con")
-        # print()
+        print("grid:")
+        for row in grid:
+            print(row)
+        print("placementCounts:", placementCounts)
+        input("base case. enter to con")
+        print()
         return [grid], [placementCounts]
 
 
-    # print("grid:")
-    # for row in grid:
-    #     print(row)
+    print("grid:")
+    for row in grid:
+        print(row)
 
-    # print("returning:")
-    # print("len(placements):", len(placements))
-    # for p in placements:
-    #     print(p)
-
-    # print("len(counts):", len(counts))
-    # for c in counts:
-    #     print(c)
+    print("returning:")
+    print("len(placements):", len(placements))
+    for p in placements:
+        for row in p:
+            print(row)
+        print()
+    print("len(counts):", len(counts))
+    for c in counts:
+        print(c)
     
-    # input("recursive case. enter to con")
+    input("recursive case. enter to con")
+    print()
     return placements, counts
         
 
@@ -167,10 +169,9 @@ def findPlacements(shapes):
             key = (row, col)
             ans[key] = bestPlacementsWrapper(shapes, row, col)
     return ans
-PLACEMENTS = findPlacements(shapeMapping)
-# print("PLACEMENTS:", PLACEMENTS)
 
-ACTUAL_PLACEMENTS, COUNTS = PLACEMENTS[(4,4)]
+
+ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 4,4)
 print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
 PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
 SORTED_PAIRS = sorted(PAIRS,
