@@ -13,11 +13,11 @@
 #       remove candidate from adjList
 #       check if there's a path from source to target.
 #       if there is, return True.
-#       otherwise, returen False
+#       otherwise, return False
 import math
 import copy
 
-f_name = "11_input.txt"
+f_name = "11_example_2.txt"
 with open(f_name, "r+") as f:
     lines = f.readlines()
 
@@ -174,7 +174,60 @@ def topSort(adjList, currentNode, visited, currentPath):
     return None
 
 
-print(findCycle(ADJACENCY_LIST))
+def topOrderingHelper(adjList, inDegrees):
+    # thought: 
+    #   to return 1 topological ordering, we find a node 
+    #   w/ in-degree 0. Then, we remove that node, topologically sort the rest,
+    #   and put it in front. 
+
+    if len(adjList) != len(inDegrees):
+        raise Exception("invalid inDegree map given!")
+    
+    if len(adjList) == 1:
+        return [list(adjList.keys())[0]]
+
+    startNode = None
+    for node, inDegree in inDegrees.items():
+        if inDegree == 0:
+            startNode = node
+            continue
+    
+    if not(startNode):
+        raise Exception("No node with indegree 0 found!")
+    
+    for neighbor in adjList[startNode]:
+        inDegrees[neighbor] -= 1
+    
+    del adjList[startNode]
+    del inDegrees[startNode]
+
+    recursiveResult = topOrderingHelper(adjList, inDegrees)
+
+    return [startNode] + recursiveResult
+        
+        
+
+    
+
+def topOrder(adjList):
+    inDegrees = {node: 0 for node in adjList.keys()}
+    for node, neighbors in adjList.items():
+        for neighbor in neighbors:
+            inDegrees[neighbor] += 1
+    
+    startNode = None
+    for node, inDegree in inDegrees.items():
+        if inDegree == 0:
+            startNode = node
+            break
+    
+    if not(startNode):
+        return None
+    
+    ans = topOrderingHelper(adjList, inDegrees)
+    return ans
+
+print(topOrder(ADJACENCY_LIST))
 
 
 # svr2dacPaths = countPaths("svr", "dac", ADJACENCY_LIST)
