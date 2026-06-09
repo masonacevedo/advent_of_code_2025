@@ -97,6 +97,7 @@ GRID = [["." for _ in range(0, NUMCOLS)] for _ in range(0, NUMROWS)]
 
 AVAILABLE_SQUARES = set([(row, col) for row in range(0, NUMROWS) for col in range(0, NUMCOLS)])
 
+
 def shapeSize(shape):
     return sum((row.count("#") for row in shape))
 
@@ -116,6 +117,7 @@ def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
             placementFound = True
             newPlacementCounts = copy.copy(placementCounts)
             newPlacementCounts[shapeIndex] += 1
+
             recPlacements, recCounts = bestPlacements(shapeMap, newGrid, newPlacementCounts, newAvailableSquares)
             placements += recPlacements
             counts += recCounts
@@ -171,17 +173,28 @@ def findPlacements(shapes):
     return ans
 
 
-ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 4,4)
-print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
-PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
-SORTED_PAIRS = sorted(PAIRS,
-    key = lambda PAIR: sum(PAIR[1].values()),
-    reverse=True
-)
+def rotateShape(shape):
+    return [[shape[col][row] for col in reversed(range(0, len(shape)))] for row in range(0, len(shape[0]))]
 
-for p, c in SORTED_PAIRS:
-    for row in p:
-        print(row)
-    for k,v in c.items():
-        print(k,"|",v)
-    input("enter to con")
+s = [
+    [1,2],
+    [3,4],
+    [5,6]
+]
+rotateShape(rotateShape(rotateShape(s)))
+
+
+# ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 4,4)
+# print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
+# PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
+# SORTED_PAIRS = sorted(PAIRS,
+#     key = lambda PAIR: sum(PAIR[1].values()),
+#     reverse=True
+# )
+
+# for p, c in SORTED_PAIRS:
+#     for row in p:
+#         print(row)
+#     for k,v in c.items():
+#         print(k,"|",v)
+#     input("enter to con")
