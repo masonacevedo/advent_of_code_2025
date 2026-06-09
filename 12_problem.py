@@ -37,11 +37,11 @@ def splitShapeLines(lines):
 
 
 def buildShape(shape):
-    ansIndex = shape[0]
     grid = []
     for line in shape[1:-1]:
         grid.append(line)
-    return grid
+    return tuple(tuple(char for char in line) for line in shape[1:-1])
+    # return grid
 
 shapeLines = splitShapeLines(shapeLines)
 
@@ -102,10 +102,11 @@ def shapeSize(shape):
     return sum((row.count("#") for row in shape))
 
 def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
+    
     placements = []
     counts = []
     placementFound = False
-    for shapeIndex, shape in shapeMap.items():
+    for shape, shapeIndex in shapeMap.items():
         if shapeSize(shape) > len(availableSquares):
             continue
         
@@ -153,18 +154,31 @@ def bestPlacements(shapeMap, grid, placementCounts, availableSquares):
 
 
 def bestPlacementsWrapper(shapeMap, numRows, numCols):
+    fullShapeMap = {}
+    for index, shape in shapeMap.items():
+        fullShapeMap[tuple(shape)] = index
+        # print(shape)
+        
+        # input("enter to rotate")
+        fullShapeMap[tuple(rotateShape(shape))] = index
+        fullShapeMap[tuple(rotateShape(rotateShape(shape)))] = index
+        fullShapeMap[tuple(rotateShape(rotateShape(rotateShape(shape))))] = index
+        
+    
+    
     grid = [["." for _ in range(numCols)] for _ in range(0, numRows)]
     placementCounts = {shape:0 for shape in shapeMap}
     availableSquares = set([(row, col) for row in range(0, numRows) for col in range(0, numCols)])
     # print("numRows:", numRows)
     # print("numCols:", numCols)
-    finalPlacements, finalCounts = bestPlacements(shapeMap, grid, placementCounts, availableSquares)
+    finalPlacements, finalCounts = bestPlacements(fullShapeMap, grid, placementCounts, availableSquares)
     # print("ans:", ans)
     # input("ans should be complex, enter to con...")
     return finalPlacements, finalCounts
 
 
 def findPlacements(shapes):
+    print("shapes:", shapes)
     ans = {}
     for row in range(0, 5):
         for col in range(0, 5):
@@ -174,17 +188,12 @@ def findPlacements(shapes):
 
 
 def rotateShape(shape):
-    return [[shape[col][row] for col in reversed(range(0, len(shape)))] for row in range(0, len(shape[0]))]
+    return tuple(tuple(shape[col][row] for col in reversed(range(0, len(shape)))) for row in range(0, len(shape[0])))
 
-s = [
-    [1,2],
-    [3,4],
-    [5,6]
-]
-rotateShape(rotateShape(rotateShape(s)))
-
-
-# ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 4,4)
+print("shapeMapping")
+print(shapeMapping[0])
+input("enter to start")
+ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 4,4)
 # print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
 # PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
 # SORTED_PAIRS = sorted(PAIRS,
