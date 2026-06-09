@@ -205,11 +205,16 @@ def findPlacements(shapes):
 def rotateShape(shape):
     return tuple(tuple(shape[col][row] for col in reversed(range(0, len(shape)))) for row in range(0, len(shape[0])))
 
+def density(placement):
+    filled = sum([row.count("#") for row in placement])
+    total = len(placement) * len(placement[0])
+    return filled/total
+
 ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 6,4)
 print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
 PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
 SORTED_PAIRS = sorted(PAIRS,
-    key = lambda PAIR: sum(PAIR[1].values()),
+    key = lambda PAIR: density(PAIR[0]),
     reverse=True
 )
 
