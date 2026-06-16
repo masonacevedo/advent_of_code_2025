@@ -210,7 +210,10 @@ def density(placement):
     total = len(placement) * len(placement[0])
     return filled/total
 
-ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 6,4)
+def convertToTuple(grid):
+    return tuple(tuple(row) for row in grid)    
+
+ACTUAL_PLACEMENTS, COUNTS = bestPlacementsWrapper(shapeMapping, 6,3)
 print("len(ACTUAL_PLACEMENTS):", len(ACTUAL_PLACEMENTS))
 PAIRS = list(zip(ACTUAL_PLACEMENTS, COUNTS))
 SORTED_PAIRS = sorted(PAIRS,
@@ -218,9 +221,29 @@ SORTED_PAIRS = sorted(PAIRS,
     reverse=True
 )
 
-for p, c in SORTED_PAIRS:
-    for row in p:
+PERFECT_PAIRS = list(filter(
+    lambda PAIR: density(PAIR[0]) == 1.0,
+    PAIRS
+))
+
+print("perfect pairs:")
+print(len(PERFECT_PAIRS))
+
+for PLACEMENT, COUNTMAP in PERFECT_PAIRS:
+    for row in PLACEMENT:
         print(row)
-    for k,v in c.items():
+    for k,v in COUNTMAP.items():
         print(k,"|",v)
-    input("enter to con")
+    print()
+    
+
+HASHABLE_PAIRS = tuple((convertToTuple(P[0]), tuple(P[1].items())) for P in PERFECT_PAIRS)
+HASHABLE_PAIRS = set(HASHABLE_PAIRS)
+print("HASHABLE PAIRS:")
+print(len(HASHABLE_PAIRS))
+for PLACEMENT, COUNTMAP in HASHABLE_PAIRS:
+    for row in PLACEMENT:
+        print(row)
+    for k,v in COUNTMAP:
+        print(k,"|",v)
+    print()
